@@ -8,6 +8,12 @@ class SiteController{
 
     }
 
+    search(req, res){
+
+        res.json({content: 'search'});
+
+    }
+
 }
 
 module.exports = new SiteController;
