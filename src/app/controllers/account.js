@@ -1,5 +1,5 @@
 
-class AccounntController{
+class AccountController{
     
     // get /:slug
     index(req, res){
@@ -46,4 +46,4 @@ class AccounntController{
 
 }
 
-module.exports = new AccounntController;
+module.exports = new AccountController;

@@ -2,9 +2,10 @@ const express = require('express');
 const path = require('path');
 const db = require('./src/config/db');
 const route = require('./src/routes');
+const {PORT} = require('./src/config/config');
 
 const app = express();
-const port = 3000;
+//const port = 3000;
 
 // connect db
 db.connect();
@@ -28,6 +29,6 @@ db.connect();
 route(app);
 
 
-app.listen(port, () => {
-  console.log(`App listening on port ${port}`);
+app.listen(PORT, () => {
+  console.log(`App listening on port ${PORT}`);
 });
