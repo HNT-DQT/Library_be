@@ -1,10 +1,10 @@
-const accountRouter = require('./account');
-const siteRouter = require('./site');
-const titleRouter = require('./title');
-const bookRouter = require('./book');
-const transactionRouter = require('./transaction');
-const extensionRouter = require('./extension');
-const notiRouter = require('./notification');
+const accountRouter = require('./account.routes');
+const siteRouter = require('./site.routes');
+const titleRouter = require('./title.routes');
+const bookRouter = require('./book.routes');
+const transactionRouter = require('./transaction.routes');
+const extensionRouter = require('./extension.routes');
+const notiRouter = require('./notification.routes');
 
 function route(app){
     

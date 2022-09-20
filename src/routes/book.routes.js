@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const bookController = require('../app/controllers/book');
+const bookController = require('../app/controllers/book.controller');
 
 router.post('/create', bookController.createBook);
 router.post('/update', bookController.updateBook);

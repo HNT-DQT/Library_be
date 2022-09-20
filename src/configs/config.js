@@ -9,4 +9,4 @@ const DB_PORT = process.env.DB_PORT ;
 // export const DB_PWD = process.env.DB_PWD ;
 const DB_NAME = process.env.DB_NAME;
 
-module.exports={PORT, DB_HOST, DB_PORT, DB_NAME};
+module.exports = {PORT, DB_HOST, DB_PORT, DB_NAME};

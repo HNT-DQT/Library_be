@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const siteController = require('../app/controllers/site');
+const siteController = require('../app/controllers/site.controller');
 
 router.get('/search', siteController.search);
 router.get('/home', siteController.index);

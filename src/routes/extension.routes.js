@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const extensionController = require('../app/controllers/extension');
+const extensionController = require('../app/controllers/extension.controller');
 
 router.post('/create', extensionController.createExtension);
 router.post('/update', extensionController.updateExtension);

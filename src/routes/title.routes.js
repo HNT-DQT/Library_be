@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const titleController = require('../app/controllers/title');
+const titleController = require('../app/controllers/title.controller');
 
 router.post('/create', titleController.createTitle);
 router.post('/update', titleController.updateTitle);
