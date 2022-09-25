@@ -2,7 +2,7 @@
 class TitleController{
     
     // get /:slug
-    index(req, res){
+    getAllTitles(req, res){
         
         res.json({content: 'get all'});
 

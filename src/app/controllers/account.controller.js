@@ -1,10 +1,12 @@
 const accountService = require('../../services/account.service');
+const Util = require('../../utils/util');
+const bcrypt = require('bcrypt');
 const {Role} = require('../models/account.model');
 
 class AccountController {
     
-    // get /:slug
-    index = async (req, res) => {
+    // get /profile
+    getProfile = async (req, res) => {
         let accounts = await accountService.getAll();
         console.log(accounts);
         if(accounts) 
@@ -13,26 +15,96 @@ class AccountController {
 
     }
 
-    login(req, res){
+    login = async (req, res) => {
 
-        res.json({content: 'login'});
+        try{
+            const body = req.body;
+
+            const acc = await accountService.findUsername(body.username);
+            if(!acc) return res.status(404).json('Email or phone number doesnot exist');
+
+            const validPwd = await bcrypt.compare(body.password, acc.password);
+            if(!validPwd) return res.status(404).json('Wrong password');
+
+            const accessToken = Util.generateAccessToken({
+                id: acc._id,
+                email: acc.email,
+                phoneNumber: acc.phoneNumber,
+                name: acc.name,
+                role: acc.role,
+            });
+            const {password, role, ...account} = acc._doc;
+
+            return res.json({account, accessToken});
+
+        }catch (err){
+            return res.status(400).json({error: err.message});
+        }
 
     }
 
-    create = async (req, res) => {
+    createUser = async (req, res) => {
 
         try{
-            const acc = await accountService.create({
-                email: req.body.email,
-                phoneNumber: req.body.phoneNumber,
-                password: req.body.password,
-                role: Role.user,
-                slug: req.body.slug ?? null,
+            const body = req.body;
+
+            const emailCheck = await accountService.checkEmail(body.email);
+            if(emailCheck)
+                return res.status(400).json("Email existed");
+        
+            const phoneNumberCheck = await accountService.checkPhoneNumber(body.phoneNumber);
+            if(phoneNumberCheck)
+                return res.status(400).json("Phone number existed");
+
+            const hashedPwd = await Util.hashPwd(body.password);
+            
+            let user = await accountService.create({
+                email: body.email,
+                phoneNumber: body.phoneNumber,
+                password: hashedPwd,
+                role: Role.USER,
+                name: body.name,
+                gender: Util.formatGender(body.gender),
+                address: body.address,
             });
-            console.log(req.body.slug);
-            res.json(acc);
+            const {password, role, ...nUser} = user._doc;
+
+            return res.json(nUser);
         }catch(err){
-            res.status(400).json({error: err});
+            return res.status(400).json({error: err.message});
+        }
+        
+
+    }
+
+    createLibrarian = async (req, res) => {
+        try{
+            const body = req.body;
+
+            const emailCheck = await accountService.checkEmail(body.email);
+            if(emailCheck)
+                return res.status(400).json("Email existed");
+        
+            const phoneNumberCheck = await accountService.checkPhoneNumber(body.phoneNumber);
+            if(phoneNumberCheck)
+                return res.status(400).json("Phone number existed");
+
+            const hashedPwd = await Util.hashPwd(body.password);
+
+            const user = await accountService.create({
+                email: body.email,
+                phoneNumber: body.phoneNumber,
+                password: hashedPwd,
+                role: Role.LIBRARIAN,
+                name: body.name,
+                gender: accountService.formatGender(body.gender),
+                address: body.address,
+            });
+            const {password, role, ...nUser} = user._doc;
+
+            return res.json(nUser);
+        }catch(err){
+            return res.status(400).json({error: err.message});
         }
         
 
@@ -50,18 +122,16 @@ class AccountController {
 
     }
 
+    lockUser = async (req, res) =>{
+
+        res.json({content: 'lock user'});
+    };
+
     updateProfile(req, res){
 
         res.json({content: 'update profile'});
 
     }
-
-    getCart(req, res){
-
-        res.json({content: 'cart'});
-
-    }
-
 
 }
 

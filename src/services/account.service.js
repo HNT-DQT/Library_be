@@ -2,15 +2,34 @@ const {Account} = require('../app/models/account.model');
 
 class AccountService{
     
-    async getAll(){
+    getAll = async() => {
     
         return await Account.find();
 
     }
 
-    async create(acc){
+    create = async(acc) => {
 
         return await Account.create(acc);
+
+    }
+
+    checkEmail = async(param) => {
+
+        return await Account.exists({email: param});
+    }
+
+    checkPhoneNumber = async(param) => {
+
+        return await Account.exists({phoneNumber: param});
+    }
+
+    findUsername = async(username) => {
+
+        return await Account.findOne({$or:[
+            {email: username},
+            {phoneNumber: username}
+        ]});
 
     }
 

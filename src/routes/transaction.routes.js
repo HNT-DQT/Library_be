@@ -5,7 +5,7 @@ const transactionController = require('../app/controllers/transaction.controller
 
 router.post('/create', transactionController.createTransaction);
 router.post('/update', transactionController.updateTransaction);
-router.post('/delete', transactionController.deleteTransaction);
+router.get('/delete', transactionController.deleteTransaction);
 router.get('/:userslug/all', transactionController.index);
 router.get('/:id', transactionController.getTransaction);
 

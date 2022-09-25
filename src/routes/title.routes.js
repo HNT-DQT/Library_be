@@ -5,8 +5,8 @@ const titleController = require('../app/controllers/title.controller');
 
 router.post('/create', titleController.createTitle);
 router.post('/update', titleController.updateTitle);
-router.post('/delete', titleController.deleteTitle);
-router.get('/list', titleController.index);
+router.get('/delete', titleController.deleteTitle);
+router.get('/list', titleController.getAllTitles);
 router.get('/:slug', titleController.getTitle);
 
 module.exports = router;

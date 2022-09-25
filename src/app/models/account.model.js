@@ -4,28 +4,29 @@ const Schema = mongoose.Schema;
 const schema = new Schema(
     {
         email: {
-            type: String,
-            required: true,
-            trim: true,
+            type: String, required: true, trim: true,
         },
         phoneNumber: {
-            type: String,
-            required: true,
-            trim: true,
+            type: String, required: true, trim: true,
         },
         password: {
-            type: String,
-            required: true,
-            trim: true,
+            type: String, required: true, trim: true,
         },
         role: { 
-            type: Number, 
-            required: true,
-            default: 0,
+            type: String, required: true, trim: true,
         },
-        slug: { 
-            type: String,
+        name: {
+            type: String, required: true, trim: true,
         },
+        gender: {
+            type: String, required: true, trim: true,
+        },
+        address: { 
+            type: String, required: true, trim: true,
+        },
+        isLock: { 
+            type: Boolean, required: true, default: false,
+        }
     },
     {
         timestamps: true,
@@ -35,15 +36,12 @@ const schema = new Schema(
 const Account = mongoose.model('Account', schema);
 
 const Role = {
-    USER: "USER", LIBRARIAN: "LIBRARIAN", ADMIN: "LIBRARIAN"
+    USER: "USER", LIBRARIAN: "LIBRARIAN", ADMIN: "ADMIN"
 }
 
 const Gender = {
     MALE: "MALE", FEMALE: "FEMALE", NONE: "NONE"
 }
 
-const Status = {
-    LOCKED: "LOCKED", ACTIVE: "ACTIVE"
-}
 
-module.exports = { Account, Role, Gender, Status};
+module.exports = { Account, Role, Gender};
