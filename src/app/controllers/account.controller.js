@@ -2,16 +2,26 @@ const accountService = require('../../services/account.service');
 const Util = require('../../utils/util');
 const bcrypt = require('bcrypt');
 const {Role} = require('../models/account.model');
+const authorization = require('../../middlewares/authorization');
 
 class AccountController {
     
     // get /profile
     getProfile = async (req, res) => {
-        let accounts = await accountService.getAll();
-        console.log(accounts);
-        if(accounts) 
-            res.json(accounts);
-        else res.status(400).json({error: 'Error!'});
+        try {
+            const accId = authorization.requestAccount(req, res);
+
+            const acc = await accountService.findById(accId);
+
+            const {password, role, ...account} = acc._doc;
+
+            return res.json(account);
+
+        }catch(err){
+            console.log(err);
+            return res.status(400).json({error: err.message});
+        }
+        
 
     }
 
@@ -26,18 +36,22 @@ class AccountController {
             const validPwd = await bcrypt.compare(body.password, acc.password);
             if(!validPwd) return res.status(404).json('Wrong password');
 
-            const accessToken = Util.generateAccessToken({
-                id: acc._id,
-                email: acc.email,
-                phoneNumber: acc.phoneNumber,
-                name: acc.name,
-                role: acc.role,
+            const accessToken = Util.generateAccessToken(acc);
+            const refreshToken = Util.generateRefreshToken(acc);
+
+            res.cookie('refreshToken', refreshToken, {
+                httpOnly: true,
+                secure: false, // true if in deployment env
+                path: '/',
+                sameSite: 'strict',
             });
+
             const {password, role, ...account} = acc._doc;
 
             return res.json({account, accessToken});
 
         }catch (err){
+            console.log(err);
             return res.status(400).json({error: err.message});
         }
 
@@ -71,6 +85,7 @@ class AccountController {
 
             return res.json(nUser);
         }catch(err){
+            console.log(err);
             return res.status(400).json({error: err.message});
         }
         
@@ -97,13 +112,14 @@ class AccountController {
                 password: hashedPwd,
                 role: Role.LIBRARIAN,
                 name: body.name,
-                gender: accountService.formatGender(body.gender),
+                gender: Util.formatGender(body.gender),
                 address: body.address,
             });
             const {password, role, ...nUser} = user._doc;
 
             return res.json(nUser);
         }catch(err){
+            console.log(err);
             return res.status(400).json({error: err.message});
         }
         

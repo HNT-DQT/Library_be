@@ -33,6 +33,12 @@ class AccountService{
 
     }
 
+    findById = async(accId) => {
+
+        return await Account.findById(accId);
+
+    }
+
     
 }
 

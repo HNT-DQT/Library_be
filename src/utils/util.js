@@ -1,12 +1,28 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-const {TOKEN_SECRET_KEY, BCRYPT_SALT} = require('../configs/config');
+const {ACCESS_SECRET_KEY, REFRESH_SECRET_KEY, BCRYPT_SALT} = require('../configs/config');
 const {Gender} = require('../app/models/account.model');
 
 class Util {
 
     generateAccessToken = (data) => {
-        return jwt.sign(data, TOKEN_SECRET_KEY, { expiresIn: "7d" });
+        return jwt.sign({
+            id: data._id,
+            email: data.email,
+            phoneNumber: data.phoneNumber,
+            name: data.name,
+            role: data.role,
+        }, ACCESS_SECRET_KEY, { expiresIn: "7d" });
+    }
+
+    generateRefreshToken = (data) => {
+        return jwt.sign({
+            id: data._id,
+            email: data.email,
+            phoneNumber: data.phoneNumber,
+            name: data.name,
+            role: data.role,
+        }, REFRESH_SECRET_KEY, { expiresIn: "7d" });
     }
 
     formatGender = (gender) => {
