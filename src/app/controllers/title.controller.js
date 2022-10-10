@@ -1,28 +1,74 @@
+const titleService = require('../../services/title.service');
 
 class TitleController{
     
-    // get /:slug
-    getAllTitles(req, res){
+    getAllTitles = async(req, res) => {
         
-        res.json({content: 'get all'});
+        try {
+
+            const titles = await titleService.getAll();
+
+            titles.forEach(title => {
+                delete title.trend;
+            });
+            return res.json(titles);
+
+        }catch(err){
+            console.log(err);
+            return res.status(400).json({error: err.message});
+        }
 
     }
 
-    getTitle(req, res){
+    getTitle = async(req, res) => {
 
-        res.json({content: 'get title'});
+        try {
+            const titleSlug = req.params.slug;
+
+            const title = await titleService.findBySlug(titleSlug);
+
+            return res.json(title);
+
+        }catch(err){
+            console.log(err);
+            return res.status(400).json({error: err.message});
+        }
 
     }
 
-    createTitle(req, res){
+    createTitle = async (req, res) => {
 
-        res.json({content: 'create title'});
+        try {
+            const body = req.body;
+
+            const title = await titleService.create(body);
+
+            return res.json(title);
+
+        }catch(err){
+            console.log(err);
+            return res.status(400).json({error: err.message});
+        }
 
     }
 
-    updateTitle(req, res){
+    updateTitle = async(req, res) => {
 
-        res.json({content: 'update title'});
+        try {
+            const titleId = req.query.id;
+            const body = req.body;
+            delete body.trend;
+            
+            body._id = titleId;
+
+            const title = await titleService.update(body);
+
+            return res.json(title);
+
+        }catch(err){
+            console.log(err);
+            return res.status(400).json({error: err.message});
+        }
 
     }
 

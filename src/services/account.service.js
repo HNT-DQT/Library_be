@@ -1,16 +1,34 @@
-const {Account} = require('../app/models/account.model');
+const {Account, AccountDTO} = require('../app/models/account.model');
 
 class AccountService{
     
-    getAll = async() => {
+    getAll = async(cond) => {
     
-        return await Account.find();
+        const accounts = await Account.find(cond);
+        let accountsDTO = [];
+        accounts.forEach(account => {
+            accountsDTO.push(new AccountDTO(account));
+        });
+        return accountsDTO;
+
+    }
+
+    update = async(acc) => {
+
+        await Account.findOneAndUpdate({_id: acc._id}, acc);
+        const account = await Account.findById(acc._id);
+
+        if(!account) return account;
+        else return new AccountDTO(account);
 
     }
 
     create = async(acc) => {
 
-        return await Account.create(acc);
+        const account = await Account.create(acc);
+
+        if(!account) return account;
+        else return new AccountDTO(account);
 
     }
 
@@ -24,18 +42,23 @@ class AccountService{
         return await Account.exists({phoneNumber: param});
     }
 
+    // dont need dto
     findUsername = async(username) => {
 
-        return await Account.findOne({$or:[
+        const account = await Account.findOne({$or:[
             {email: username},
             {phoneNumber: username}
         ]});
+
+        return account.toObject();
 
     }
 
     findById = async(accId) => {
 
-        return await Account.findById(accId);
+        const account = await Account.findById(accId);
+        if(!account) return account;
+        else return new AccountDTO(account);
 
     }
 

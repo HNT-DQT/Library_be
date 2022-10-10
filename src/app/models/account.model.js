@@ -35,6 +35,28 @@ const schema = new Schema(
 
 const Account = mongoose.model('Account', schema);
 
+class AccountDTO {
+    email;
+    phoneNumber;
+    name;
+    gender;
+    address;
+    isLock;
+    createdAt;
+    updatedAt;
+
+    constructor (account){
+        this.email = account.email;
+        this.phoneNumber = account.phoneNumber;
+        this.name = account.name;
+        this.gender = account.gender;
+        this.address = account.address;
+        this.isLock = account.isLock;
+        this.createdAt = account.createdAt;
+        this.updatedAt = account.updatedAt;
+    };
+}
+
 const Role = {
     USER: "USER", LIBRARIAN: "LIBRARIAN", ADMIN: "ADMIN"
 }
@@ -44,4 +66,4 @@ const Gender = {
 }
 
 
-module.exports = { Account, Role, Gender};
+module.exports = { Account, AccountDTO, Role, Gender};

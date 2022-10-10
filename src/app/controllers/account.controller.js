@@ -11,9 +11,7 @@ class AccountController {
         try {
             const accId = authorization.requestAccount(req, res);
 
-            const acc = await accountService.findById(accId);
-
-            const {password, role, ...account} = acc._doc;
+            const account = await accountService.findById(accId);
 
             return res.json(account);
 
@@ -22,7 +20,30 @@ class AccountController {
             return res.status(400).json({error: err.message});
         }
         
+    }
 
+    getAllUser = async (req, res) => {
+        try {
+            const account = await accountService.getAll({role: Role.USER});
+            return res.json(account);
+
+        }catch(err){
+            console.log(err);
+            return res.status(400).json({error: err.message});
+        }
+        
+    }
+
+    getAllLibrarian = async (req, res) => {
+        try {
+            const account = await accountService.getAll({role: Role.LIBRARIAN});
+            return res.json(account);
+
+        }catch(err){
+            console.log(err);
+            return res.status(400).json({error: err.message});
+        }
+        
     }
 
     login = async (req, res) => {
@@ -30,10 +51,10 @@ class AccountController {
         try{
             const body = req.body;
 
-            const acc = await accountService.findUsername(body.username);
-            if(!acc) return res.status(404).json('Email or phone number doesnot exist');
+            const account = await accountService.findUsername(body.username);
+            if(!account) return res.status(404).json('Email or phone number doesnot exist');
 
-            const validPwd = await bcrypt.compare(body.password, acc.password);
+            const validPwd = await bcrypt.compare(body.password, account.password);
             if(!validPwd) return res.status(404).json('Wrong password');
 
             const accessToken = Util.generateAccessToken(acc);
@@ -46,7 +67,7 @@ class AccountController {
                 sameSite: 'strict',
             });
 
-            const {password, role, ...account} = acc._doc;
+            delete account.password; delete account.role;
 
             return res.json({account, accessToken});
 
@@ -72,7 +93,7 @@ class AccountController {
 
             const hashedPwd = await Util.hashPwd(body.password);
             
-            let user = await accountService.create({
+            const user = await accountService.create({
                 email: body.email,
                 phoneNumber: body.phoneNumber,
                 password: hashedPwd,
@@ -81,9 +102,9 @@ class AccountController {
                 gender: Util.formatGender(body.gender),
                 address: body.address,
             });
-            const {password, role, ...nUser} = user._doc;
+            delete user.password; delete user.role;
 
-            return res.json(nUser);
+            return res.json(user);
         }catch(err){
             console.log(err);
             return res.status(400).json({error: err.message});
@@ -106,7 +127,7 @@ class AccountController {
 
             const hashedPwd = await Util.hashPwd(body.password);
 
-            const user = await accountService.create({
+            const librarian = await accountService.create({
                 email: body.email,
                 phoneNumber: body.phoneNumber,
                 password: hashedPwd,
@@ -115,9 +136,9 @@ class AccountController {
                 gender: Util.formatGender(body.gender),
                 address: body.address,
             });
-            const {password, role, ...nUser} = user._doc;
+            delete librarian.password; delete librarian.role;
 
-            return res.json(nUser);
+            return res.json(librarian);
         }catch(err){
             console.log(err);
             return res.status(400).json({error: err.message});
@@ -132,20 +153,73 @@ class AccountController {
 
     }
 
-    changePassword(req, res){
+    changePassword = async (req, res) => {
 
-        res.json({content: 'change password'});
+        try {
+            const body = req.body;
+            const accId = authorization.requestAccount(req, res);
+
+            const acc = await accountService.findById(accId);
+
+            
+            const [oPwd, nPwd] = [body.oldPassword, body.newPassword];
+
+            const validPwd = await bcrypt.compare(oPwd, acc.password);
+            if(!validPwd) return res.status(404).json('Wrong old password');
+
+            acc.password = await Util.hashPwd(nPwd); 
+            const account = await accountService.update(acc);
+
+            delete account.password; delete account.role;
+            return res.json(account);
+
+        }catch(err){
+            console.log(err);
+            return res.status(400).json({error: err.message});
+        }
 
     }
 
     lockUser = async (req, res) =>{
 
-        res.json({content: 'lock user'});
+        try{
+            const [userId, userStt] = [req.query.id, req.query.stt ?? true];
+
+            const userAcc = await accountService.findById(userId);
+            if(userAcc.role !== Role.USER) 
+                return res.status(403).json('You are not allowed');
+
+            userAcc.isLock = userStt;
+            const account = await accountService.update(userAcc);
+
+            delete account.password; delete account.role;
+            
+            return res.json(account);
+
+        }catch(err){
+            console.log(err);
+            return res.status(400).json({error: err.message});
+        }
+        
     };
 
-    updateProfile(req, res){
+    updateProfile = async(req, res) => {
 
-        res.json({content: 'update profile'});
+        try {
+            const body = req.body;
+            delete body.password; delete body.role;
+            const accId = authorization.requestAccount(req, res);
+
+            body._id = accId;
+            const account = await accountService.update(body);
+            
+            delete account.password; delete account.role;
+            return res.json(account);
+
+        }catch(err){
+            console.log(err);
+            return res.status(400).json({error: err.message});
+        }
 
     }
 

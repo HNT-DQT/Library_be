@@ -1,27 +1,47 @@
+const cartService = require('../../services/cart.service');
+const authorization = require('../../middlewares/authorization');
 
 class CartController{
 
-    getCart(req, res){
+    getCart = async(req, res) => {
 
-        res.json({content: 'get Cart'});
+        try {
+            const userId = authorization.requestAccount(req, res);
 
-    }
+            const carts = await cartService.getAll(userId);
+            return res.json(carts);
 
-    createCart(req, res){
-
-        res.json({content: 'create Cart'});
-
-    }
-
-    updateCart(req, res){
-
-        res.json({content: 'update Cart'});
+        }catch(err){
+            console.log(err);
+            return res.status(400).json({error: err.message});
+        }
 
     }
 
-    deleteCart(req, res){
+    addToCart = async(req, res) => {
 
-        res.json({content: 'delete Cart'});
+        try {
+            const titleId = req.body.titleId;
+            const userId = authorization.requestAccount(req, res);
+
+            const nCart = await cartService.create({titleId: titleId, userId: userId});
+            return res.json(nCart);
+
+        }catch(err){
+            console.log(err);
+            return res.status(400).json({error: err.message});
+        }
+
+    }
+
+    deleteFromCart = async(req, res) => {
+        const itemId = body.params.id;
+
+        const item = await cartService.delete(itemId);
+
+        if(!item) return res.status(400).json({message: 'Delete failed'});
+
+        return res.json({message: 'Delete successfully'});
 
     }
 
