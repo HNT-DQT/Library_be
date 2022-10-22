@@ -2,47 +2,41 @@ const {Title, TitleDTO} = require('../app/models/title.model');
 
 class TitleService{
     
-    getAll = async(uId) => {
+    getAll = async() => {
     
-        const carts = await Cart.find({userId: uId});
-        return carts.toObject();
+        const titles = await Title.find();
+        return titles;
 
     }
 
     findBySlug = async(slug) => {
 
-        const title = await Account.findOne({slug: slug});
+        const title = await Title.findOne({slug: slug});
 
-        if(!title) return title;
-        else return new TitleDTO(title);
+        return title ? new TitleDTO(title) : title;
 
     }
 
-    update = async(data) => {
+    update = async(title) => {
 
-        await Title.findOneAndUpdate({_id: data._id}, data);
-        const title = await Title.findById(body._id);
+        await Title.findOneAndUpdate({_id: title._id}, title);
+        const nTitle = await Title.findById(title._id);
 
-        if(!title) return title;
-        else return new TitleDTO(title);
+        return nTitle ? new TitleDTO(nTitle) : nTitle;
 
     }
 
     delete = async(itemId) => {
 
-        const item = await Cart.findOneAndDelete({_id: itemId});
-        return item.toObject();
+        
 
     }
 
-    // need to test
-    create = async(data) => {
-        const title = new Title(data);
-
+    create = async(title) => {
+     
         const nTitle = await Title.create(title);
         
-        if(!nTitle) return nTitle;
-        else return new TitleDTO(nTitle);
+        return nTitle ? new TitleDTO(nTitle) : nTitle;
 
     }
     

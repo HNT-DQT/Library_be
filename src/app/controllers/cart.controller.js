@@ -1,4 +1,5 @@
 const cartService = require('../../services/cart.service');
+const titleService = require('../../services/title.service');
 const authorization = require('../../middlewares/authorization');
 
 class CartController{
@@ -9,6 +10,14 @@ class CartController{
             const userId = authorization.requestAccount(req, res);
 
             const carts = await cartService.getAll(userId);
+
+            for (let i in carts){
+                carts[i] = carts[i].toObject();
+                const title = await titleService.findBySlug(carts[i].titleSlug);
+                carts[i].title = title;
+                delete carts[i].titleSlug;
+            }
+
             return res.json(carts);
 
         }catch(err){
@@ -21,11 +30,15 @@ class CartController{
     addToCart = async(req, res) => {
 
         try {
-            const titleId = req.body.titleId;
+            const titleSlug = req.body.titleSlug;
             const userId = authorization.requestAccount(req, res);
+            const item = {titleSlug: titleSlug, userId: userId};
 
-            const nCart = await cartService.create({titleId: titleId, userId: userId});
-            return res.json(nCart);
+            if(await cartService.checkExistedTitle(item)) 
+                return res.status(400).json({message: 'The title existed in your cart'});
+
+            const nItem = await cartService.create(item);
+            return res.json(nItem);
 
         }catch(err){
             console.log(err);
@@ -35,14 +48,26 @@ class CartController{
     }
 
     deleteFromCart = async(req, res) => {
-        const itemId = body.params.id;
 
-        const item = await cartService.delete(itemId);
+        try {
+            const itemId = body.params.id;
+            const userId = authorization.requestAccount(req, res);
 
-        if(!item) return res.status(400).json({message: 'Delete failed'});
+            const item = await cartService.findById(itemId);
 
-        return res.json({message: 'Delete successfully'});
+            if(item.userId !== userId) return res.status(400).json({message: 'You are not allowed'});
 
+            const deletedItem = await cartService.delete(itemId);
+
+            if(!deletedItem) return res.status(400).json({message: 'Delete failed'});
+
+            return res.json({message: 'Delete successfully'});
+
+        }catch(err){
+            console.log(err);
+            return res.status(400).json({error: err.message});
+        }
+        
     }
 
 }

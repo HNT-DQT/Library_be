@@ -8,9 +8,11 @@ class TitleController{
 
             const titles = await titleService.getAll();
 
-            titles.forEach(title => {
-                delete title.trend;
-            });
+            for (let i in titles) {
+                titles[i] = titles[i].toObject();
+                delete titles[i].trend;
+            }
+
             return res.json(titles);
 
         }catch(err){
@@ -27,6 +29,8 @@ class TitleController{
 
             const title = await titleService.findBySlug(titleSlug);
 
+            if(!title) return res.status(404).json("Not found");
+
             return res.json(title);
 
         }catch(err){
@@ -40,6 +44,7 @@ class TitleController{
 
         try {
             const body = req.body;
+            body.availability = body.quantity;
 
             const title = await titleService.create(body);
 
@@ -62,6 +67,8 @@ class TitleController{
             body._id = titleId;
 
             const title = await titleService.update(body);
+
+            if(!title) return res.status(404).json('Not found');
 
             return res.json(title);
 

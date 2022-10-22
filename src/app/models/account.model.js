@@ -36,6 +36,7 @@ const schema = new Schema(
 const Account = mongoose.model('Account', schema);
 
 class AccountDTO {
+    _id;
     email;
     phoneNumber;
     name;
@@ -46,6 +47,7 @@ class AccountDTO {
     updatedAt;
 
     constructor (account){
+        this._id = account._id;
         this.email = account.email;
         this.phoneNumber = account.phoneNumber;
         this.name = account.name;

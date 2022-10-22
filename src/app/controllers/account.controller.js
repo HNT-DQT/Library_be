@@ -57,8 +57,8 @@ class AccountController {
             const validPwd = await bcrypt.compare(body.password, account.password);
             if(!validPwd) return res.status(404).json('Wrong password');
 
-            const accessToken = Util.generateAccessToken(acc);
-            const refreshToken = Util.generateRefreshToken(acc);
+            const accessToken = Util.generateAccessToken(account);
+            const refreshToken = Util.generateRefreshToken(account);
 
             res.cookie('refreshToken', refreshToken, {
                 httpOnly: true,
@@ -211,6 +211,8 @@ class AccountController {
             const accId = authorization.requestAccount(req, res);
 
             body._id = accId;
+            if(body.gender) body.gender = Util.formatGender(body.gender);
+            
             const account = await accountService.update(body);
             
             delete account.password; delete account.role;

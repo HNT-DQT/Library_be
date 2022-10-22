@@ -2,25 +2,34 @@ const {Cart} = require('../app/models/cart.model');
 
 class CartService{
     
-    getAll = async(uId) => {
+    getAll = async(userId) => {
     
-        const carts = await Cart.find({userId: uId});
-        return carts.toObject();
+        const items = await Cart.find({userId: userId});
+        return items;
 
+    }
+
+    findById = async(itemId) => {
+        const item = await Cart.findById(itemId);
+        return item ? item.toObject() : item;
+    }
+
+    checkExistedTitle = async(item) => {
+        const checkedItem = await Cart.findOne(item);
+        return checkedItem ? true : false;
     }
 
     delete = async(itemId) => {
 
         const item = await Cart.findOneAndDelete({_id: itemId});
-        return item.toObject();
+        return  item ? item.toObject() : item;
 
     }
 
-    create = async(cart) => {
+    create = async(item) => {
 
-        const nCart = await Cart.create(cart);
-        return nCart.toObject();
-
+        const nItem = await Cart.create(item);
+        return  nItem ? nItem.toObject() : nItem;
     }
     
 }

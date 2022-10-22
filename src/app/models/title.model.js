@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const slug = require('mongoose-slug-generator');
+const slug = require('mongoose-slug-updater');
 
 mongoose.plugin(slug);
 const Schema = mongoose.Schema;
@@ -10,10 +10,10 @@ const schema = new Schema(
             type: String, required: true, trim: true,
         },
         pages: {
-            type: String, required: true, trim: true,
+            type: Number, required: true,
         },
         publishYear: {
-            type: String, required: true, trim: true,
+            type: Number, required: true,
         },
         authors: { 
             type: Array, required: true, trim: true,
@@ -37,7 +37,7 @@ const schema = new Schema(
             type: String, required: true, default: "",
         },
         slug: { 
-            type: String, slug: 'name', unique: true,
+            type: String, slug: 'name', forceIdSlug: true,
         }
 
     },
@@ -47,6 +47,7 @@ const schema = new Schema(
 );
 
 class TitleDTO {
+    _id;
     name;
     pages;
     publishYear;
@@ -61,6 +62,7 @@ class TitleDTO {
     updatedAt;
 
     constructor (data){
+        this._id = data._id;
         this.name = data.name;
         this.pages = data.pages;
         this.publishYear = data.publishYear;

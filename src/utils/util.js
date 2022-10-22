@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const {ACCESS_SECRET_KEY, REFRESH_SECRET_KEY, BCRYPT_SALT} = require('../configs/config');
 const {Gender} = require('../app/models/account.model');
+const {Status} = require('../app/models/book.model');
 
 class Util {
 
@@ -33,6 +34,14 @@ class Util {
         else return Gender.NONE;
     }
 
+    formatStatus = (status) => {
+        if(status.toUpperCase() === Status.AVAILABLE)
+            return Status.AVAILABLE;
+        else if(status.toUpperCase() === Status.UNAVAILABLE)
+            return Status.UNAVAILABLE;
+        else return Status.BROKEN_OR_LOST;
+    }
+    
     hashPwd = async (pwd) => {
         const salt = await bcrypt.genSalt(BCRYPT_SALT);
         return await bcrypt.hash(pwd, salt);

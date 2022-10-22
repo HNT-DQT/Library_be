@@ -1,28 +1,80 @@
+const bookService = require('../../services/book.service');
+const Util = require('../../utils/util');
 
 class BookController{
     
     // get /:slug
-    index(req, res){
+    getAllBooks = async(req, res) => {
         
-        res.json({content: 'get all book of title'});
+        try{
+            const titleSlug = req.params.titleslug;
+
+            const books = await bookService.getAll(titleSlug);
+
+            return res.json(books);
+
+        }catch(err){
+            console.log(err);
+            return res.status(400).json({error: err.message});
+        }
+    }
+
+    getBook = async(req, res) => {
+
+        try{
+            const bookId = req.params.id;
+
+            const book = await bookService.findById(bookId);
+
+            if(!book) return res.status(404).json({message: 'Not found'});
+
+            return res.json(book);
+
+        }catch(err){
+            console.log(err);
+            return res.status(400).json({error: err.message});
+        }
 
     }
 
-    getBook(req, res){
+    createBook = async(req, res) => {
 
-        res.json({content: 'get book'});
+        try{
+            const body = req.body;
+            delete body.status;
+
+            const nBook = await bookService.create({titleSlug: body.titleSlug});
+
+            return res.json(nBook);
+
+        }catch(err){
+            console.log(err);
+            return res.status(400).json({error: err.message});
+        }
 
     }
 
-    createBook(req, res){
+    updateBook = async(req, res) => {
 
-        res.json({content: 'create book'});
+        try{
+            const bookId = req.query.id;
+            const body = req.body;
 
-    }
+            body._id = bookId;
 
-    updateBook(req, res){
+            if(body.status) body.status = Util.formatStatus(body.status);
 
-        res.json({content: 'update book'});
+            const book = await bookService.update(body);
+
+            if(!book) return res.status(404).json('Not found');
+
+            return res.json(book);
+
+
+        }catch(err){
+            console.log(err);
+            return res.status(400).json({error: err.message});
+        }
 
     }
 
