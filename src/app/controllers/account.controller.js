@@ -2,14 +2,14 @@ const accountService = require('../../services/account.service');
 const Util = require('../../utils/util');
 const bcrypt = require('bcrypt');
 const {Role} = require('../models/account.model');
-const authorization = require('../../middlewares/authorization');
+const authz = require('../../middlewares/authorization');
 
 class AccountController {
     
     // get /profile
     getProfile = async (req, res) => {
         try {
-            const accId = authorization.requestAccount(req, res);
+            const accId = authz.requestAccount(req, res);
 
             const account = await accountService.findById(accId);
 
@@ -102,6 +102,8 @@ class AccountController {
                 gender: Util.formatGender(body.gender),
                 address: body.address,
             });
+
+            if(!user) return res.status(400).json('Cannot create user');
             delete user.password; delete user.role;
 
             return res.json(user);
@@ -136,6 +138,8 @@ class AccountController {
                 gender: Util.formatGender(body.gender),
                 address: body.address,
             });
+
+            if(!librarian) return res.status(500).json('Cannot create librarian');
             delete librarian.password; delete librarian.role;
 
             return res.json(librarian);
@@ -157,7 +161,7 @@ class AccountController {
 
         try {
             const body = req.body;
-            const accId = authorization.requestAccount(req, res);
+            const accId = authz.requestAccount(req, res);
 
             const acc = await accountService.findById(accId);
 
@@ -208,7 +212,7 @@ class AccountController {
         try {
             const body = req.body;
             delete body.password; delete body.role;
-            const accId = authorization.requestAccount(req, res);
+            const accId = authz.requestAccount(req, res);
 
             body._id = accId;
             if(body.gender) body.gender = Util.formatGender(body.gender);

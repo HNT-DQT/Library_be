@@ -13,9 +13,9 @@ class CartController{
 
             for (let i in carts){
                 carts[i] = carts[i].toObject();
-                const title = await titleService.findBySlug(carts[i].titleSlug);
+                const title = await titleService.findById(carts[i].titleId);
                 carts[i].title = title;
-                delete carts[i].titleSlug;
+                delete carts[i].titleId;
             }
 
             return res.json(carts);
@@ -30,14 +30,16 @@ class CartController{
     addToCart = async(req, res) => {
 
         try {
-            const titleSlug = req.body.titleSlug;
+            const titleId = req.body.titleId;
             const userId = authorization.requestAccount(req, res);
-            const item = {titleSlug: titleSlug, userId: userId};
+            const item = {titleId: titleId, userId: userId};
 
             if(await cartService.checkExistedTitle(item)) 
                 return res.status(400).json({message: 'The title existed in your cart'});
 
             const nItem = await cartService.create(item);
+
+            if(!nItem) return res.status(500).json('Cannot add to cart');
             return res.json(nItem);
 
         }catch(err){

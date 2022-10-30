@@ -3,8 +3,8 @@ const Schema = mongoose.Schema;
 
 const schema = new Schema(
     {
-        titleSlug: {
-            type: String, required: true, trim: true,
+        titleId: {
+            type: mongoose.ObjectId, required: true, trim: true,
         },
         status: {
             type: String, required: true, trim: true, default: "A",

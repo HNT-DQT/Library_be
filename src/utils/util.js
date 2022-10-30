@@ -42,6 +42,15 @@ class Util {
         else return Status.BROKEN_OR_LOST;
     }
     
+    formatReturnedDate = (time, startedDate) => {
+        const week = 7*24*60*60*1000;
+        if(time[1] === 'w')
+            if(time[0] > 4) 
+                return startedDate.getTime() + 4*week; // default is 4 weeks
+            else return startedDate.getTime() + time[0]*week;
+        else return startedDate.getTime() + week; // default is 1 week
+    }
+
     hashPwd = async (pwd) => {
         const salt = await bcrypt.genSalt(BCRYPT_SALT);
         return await bcrypt.hash(pwd, salt);

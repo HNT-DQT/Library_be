@@ -14,9 +14,9 @@ class CartService{
         return item ? item.toObject() : item;
     }
 
-    checkExistedTitle = async(item) => {
-        const checkedItem = await Cart.findOne(item);
-        return checkedItem ? true : false;
+    findExistedTitle = async(item) => {
+        const cItem = await Cart.findOne(item);
+        return cItem ? cItem.toObject() : cItem;
     }
 
     delete = async(itemId) => {

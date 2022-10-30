@@ -1,4 +1,5 @@
 const bookService = require('../../services/book.service');
+const titleService = require('../../services/title.service');
 const Util = require('../../utils/util');
 
 class BookController{
@@ -7,9 +8,9 @@ class BookController{
     getAllBooks = async(req, res) => {
         
         try{
-            const titleSlug = req.params.titleslug;
+            const titleId = req.params.titleId;
 
-            const books = await bookService.getAll(titleSlug);
+            const books = await bookService.getAll(titleId);
 
             return res.json(books);
 
@@ -43,8 +44,12 @@ class BookController{
             const body = req.body;
             delete body.status;
 
-            const nBook = await bookService.create({titleSlug: body.titleSlug});
+            if(!(await titleService.findById(body.titleId)))
+                return res.status(400).json({message: 'Title is not found'});
 
+            const nBook = await bookService.create({titleId: body.titleId});
+
+            if(!nBook) return res.status(500).json('Cannot create book');
             return res.json(nBook);
 
         }catch(err){

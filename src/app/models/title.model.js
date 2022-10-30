@@ -21,12 +21,6 @@ const schema = new Schema(
         categories: {
             type: Array, required: true, trim: true,
         },
-        quantity: {
-            type: Number, required: true,
-        },
-        availability: { 
-            type: Number, required: true,
-        },
         description: { 
             type: String, required: true, trim: true,
         },

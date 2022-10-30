@@ -2,9 +2,9 @@ const {Book} = require('../app/models/book.model');
 
 class BookService{
     
-    getAll = async(titleSlug) => {
+    getAll = async(titleId) => {
     
-        const books = await Book.find({titleSlug: titleSlug});
+        const books = await Book.find({titleId: titleId});
         for(let i in books)
             books[i] = books[i].toObject();
         
@@ -25,8 +25,7 @@ class BookService{
 
     delete = async(itemId) => {
 
-        const item = await Cart.findOneAndDelete({_id: itemId});
-        return  item ? item.toObject() : item;
+     
 
     }
 

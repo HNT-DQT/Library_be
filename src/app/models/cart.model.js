@@ -6,8 +6,8 @@ const schema = new Schema(
         userId: {
             type: mongoose.ObjectId, required: true, trim: true,
         },
-        titleSlug: {
-            type: String, required: true, trim: true,
+        titleId: {
+            type: mongoose.ObjectId, required: true, trim: true,
         }
     },
     {

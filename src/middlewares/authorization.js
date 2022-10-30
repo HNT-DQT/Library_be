@@ -6,14 +6,12 @@ const Authorization = {
 
     verifyToken : (req, res, next) => {
         const token = req.rawHeaders[1];
-        // console.log(token);
       
         if(token){
             const accessToken = token.split(' ')[1];
             jwt.verify(accessToken, ACCESS_SECRET_KEY, (err, account) => {
                 if(err)
                     return res.status(403).json('Token is not valid');
-                
                 req.account = account;
                 return next();
             });

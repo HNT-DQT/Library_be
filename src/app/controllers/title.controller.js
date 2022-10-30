@@ -8,11 +8,9 @@ class TitleController{
 
             const titles = await titleService.getAll();
 
-            for (let i in titles) {
-                titles[i] = titles[i].toObject();
+            
+            for (let i in titles)
                 delete titles[i].trend;
-            }
-
             return res.json(titles);
 
         }catch(err){
@@ -48,6 +46,7 @@ class TitleController{
 
             const title = await titleService.create(body);
 
+            if(!title) return res.status(500).json('Cannot create title');
             return res.json(title);
 
         }catch(err){
