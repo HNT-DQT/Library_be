@@ -2,8 +2,7 @@ const accountRouter = require('./account.routes');
 const siteRouter = require('./site.routes');
 const titleRouter = require('./title.routes');
 const bookRouter = require('./book.routes');
-const transactionRouter = require('./transaction.routes');
-const extensionRouter = require('./extension.routes');
+const txnRouter = require('./transaction.routes');
 const notiRouter = require('./notification.routes');
 const cartRouter = require('./cart.routes');
 
@@ -15,9 +14,7 @@ function route(app){
 
     app.use('/book', bookRouter);
 
-    app.use('/transaction', transactionRouter);
-
-    app.use('/extension', extensionRouter);
+    app.use('/transaction', txnRouter);
 
     app.use('/notification', notiRouter);
     

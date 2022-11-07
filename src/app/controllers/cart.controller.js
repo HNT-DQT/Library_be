@@ -14,7 +14,7 @@ class CartController{
             for (let i in carts){
                 carts[i] = carts[i].toObject();
                 const title = await titleService.findById(carts[i].titleId);
-                carts[i].title = title;
+                carts[i]['title'] = title;
                 delete carts[i].titleId;
             }
 
@@ -34,7 +34,10 @@ class CartController{
             const userId = authorization.requestAccount(req, res);
             const item = {titleId: titleId, userId: userId};
 
-            if(await cartService.checkExistedTitle(item)) 
+            if(!await titleService.checkExistedId(titleId)) 
+                return res.status(400).json({message: 'The title is not existed'});
+
+            if(await cartService.findExistedTitle(item)) 
                 return res.status(400).json({message: 'The title existed in your cart'});
 
             const nItem = await cartService.create(item);

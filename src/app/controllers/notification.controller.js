@@ -1,7 +1,6 @@
 
 class NotificationController{
     
-    // get /:slug
     index(req, res){
         
         res.json({content: 'get all notification of user'});

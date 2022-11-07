@@ -32,6 +32,9 @@ const schema = new Schema(
         },
         slug: { 
             type: String, slug: 'name', forceIdSlug: true,
+        },
+        deletedAt: {
+            type: Date, default : null,
         }
 
     },

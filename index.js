@@ -7,20 +7,19 @@ const {PORT} = require('./src/configs/config');
 
 const app = express();
 
-// connect db
+/* connect db */ 
 db.connect();
 
 // //static file
 // app.use(express.static(path.join(__dirname, 'public')));
 
-// // support frontend (post method)
 app.use(express.urlencoded({extended: true})); // for parsing application/x-www-form-urlencoded
 app.use(express.json());  // for parsing application/json
 
-//http logger
+/* http logger */
 app.use(morgan('combined'));
 
-//router init
+/* router init */
 route(app);
 
 

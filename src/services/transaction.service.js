@@ -27,12 +27,6 @@ class TransactionService{
 
     }
 
-    delete = async(itemId) => {
-
-        
-
-    }
-
     create = async(txn) => {
      
         const nTxn = await Transaction.create(txn);

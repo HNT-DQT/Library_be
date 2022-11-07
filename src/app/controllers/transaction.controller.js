@@ -148,12 +148,6 @@ class TransactionController{
 
     }
 
-    deleteTxn(req, res){
-
-        res.json({content: 'delete Txn'});
-
-    }
-
     formatReturnedTxn = async (txn) => {
         txn = txn.toObject();
         txn.user = await accountService.findById(txn.userId);

@@ -6,46 +6,7 @@ const authz = require('../../middlewares/authorization');
 
 class AccountController {
     
-    // get /profile
-    getProfile = async (req, res) => {
-        try {
-            const accId = authz.requestAccount(req, res);
-
-            const account = await accountService.findById(accId);
-
-            return res.json(account);
-
-        }catch(err){
-            console.log(err);
-            return res.status(400).json({error: err.message});
-        }
-        
-    }
-
-    getAllUser = async (req, res) => {
-        try {
-            const account = await accountService.getAll({role: Role.USER});
-            return res.json(account);
-
-        }catch(err){
-            console.log(err);
-            return res.status(400).json({error: err.message});
-        }
-        
-    }
-
-    getAllLibrarian = async (req, res) => {
-        try {
-            const account = await accountService.getAll({role: Role.LIBRARIAN});
-            return res.json(account);
-
-        }catch(err){
-            console.log(err);
-            return res.status(400).json({error: err.message});
-        }
-        
-    }
-
+    /** POST /account/login */ 
     login = async (req, res) => {
 
         try{
@@ -78,6 +39,7 @@ class AccountController {
 
     }
 
+    /** POST /account/create */
     createUser = async (req, res) => {
 
         try{
@@ -115,6 +77,94 @@ class AccountController {
 
     }
 
+    /** GET /account/profile */
+    getProfile = async (req, res) => {
+        try {
+            const accId = authz.requestAccount(req, res);
+
+            const account = await accountService.findById(accId);
+
+            return res.json(account);
+
+        }catch(err){
+            console.log(err);
+            return res.status(400).json({error: err.message});
+        }
+        
+    }
+
+    /** POST /account/change-password */
+    changePassword = async (req, res) => {
+
+        try {
+            const body = req.body;
+            const accId = authz.requestAccount(req, res);
+
+            const acc = await accountService.findById(accId);
+
+            
+            const [oPwd, nPwd] = [body.oldPassword, body.newPassword];
+
+            const validPwd = await bcrypt.compare(oPwd, acc.password);
+            if(!validPwd) return res.status(404).json('Wrong old password');
+
+            acc.password = await Util.hashPwd(nPwd); 
+            const account = await accountService.update(acc);
+
+            delete account.password; delete account.role;
+            return res.json(account);
+
+        }catch(err){
+            console.log(err);
+            return res.status(400).json({error: err.message});
+        }
+
+    }
+
+    /** POST /account/update-profile */
+    updateProfile = async(req, res) => {
+
+        try {
+            const body = req.body;
+            delete body.password; delete body.role;
+            const accId = authz.requestAccount(req, res);
+
+            body._id = accId;
+            if(body.gender) body.gender = Util.formatGender(body.gender);
+            
+            const account = await accountService.update(body);
+            
+            delete account.password; delete account.role;
+            return res.json(account);
+
+        }catch(err){
+            console.log(err);
+            return res.status(400).json({error: err.message});
+        }
+
+    }
+
+    /** GET /account/logout */
+    logout(req, res){
+
+        res.json({content: 'logout'});
+
+    }
+
+    /** GET /account/get-all-librarians */
+    getAllLibrarian = async (req, res) => {
+        try {
+            const account = await accountService.getAll({role: Role.LIBRARIAN});
+            return res.json(account);
+
+        }catch(err){
+            console.log(err);
+            return res.status(400).json({error: err.message});
+        }
+        
+    }
+
+    /** POST /account/create-librarian */
     createLibrarian = async (req, res) => {
         try{
             const body = req.body;
@@ -151,39 +201,20 @@ class AccountController {
 
     }
 
-    logout(req, res){
-
-        res.json({content: 'logout'});
-
-    }
-
-    changePassword = async (req, res) => {
-
+    /** GET /account/get-all-users */
+    getAllUser = async (req, res) => {
         try {
-            const body = req.body;
-            const accId = authz.requestAccount(req, res);
-
-            const acc = await accountService.findById(accId);
-
-            
-            const [oPwd, nPwd] = [body.oldPassword, body.newPassword];
-
-            const validPwd = await bcrypt.compare(oPwd, acc.password);
-            if(!validPwd) return res.status(404).json('Wrong old password');
-
-            acc.password = await Util.hashPwd(nPwd); 
-            const account = await accountService.update(acc);
-
-            delete account.password; delete account.role;
+            const account = await accountService.getAll({role: Role.USER});
             return res.json(account);
 
         }catch(err){
             console.log(err);
             return res.status(400).json({error: err.message});
         }
-
+        
     }
 
+    /** GET /account/lock-user */
     lockUser = async (req, res) =>{
 
         try{
@@ -206,28 +237,6 @@ class AccountController {
         }
         
     };
-
-    updateProfile = async(req, res) => {
-
-        try {
-            const body = req.body;
-            delete body.password; delete body.role;
-            const accId = authz.requestAccount(req, res);
-
-            body._id = accId;
-            if(body.gender) body.gender = Util.formatGender(body.gender);
-            
-            const account = await accountService.update(body);
-            
-            delete account.password; delete account.role;
-            return res.json(account);
-
-        }catch(err){
-            console.log(err);
-            return res.status(400).json({error: err.message});
-        }
-
-    }
 
 }
 

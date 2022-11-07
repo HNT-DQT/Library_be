@@ -4,7 +4,6 @@ const Util = require('../../utils/util');
 
 class BookController{
     
-    // get /:slug
     getAllBooks = async(req, res) => {
         
         try{

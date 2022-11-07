@@ -3,9 +3,11 @@ const {Book, Status} = require('../app/models/book.model');
 
 class TitleService{
     
-    getAll = async() => {
+    getAll = async(query) => {
     
-        const titles = await Title.find();
+        query['deletedAt'] = null;
+
+        const titles = await Title.find(query);
 
         for (let i in titles){
             let title = titles[i];
@@ -18,7 +20,7 @@ class TitleService{
 
     findBySlug = async(slug) => {
 
-        let title = await Title.findOne({slug: slug});
+        let title = await Title.findOne({slug: slug, deletedAt: null});
 
         if(!title) return title;
 
@@ -28,7 +30,7 @@ class TitleService{
     }
 
     findById = async(titleId) => {
-        let title = await Title.findById(titleId);
+        let title = await Title.findOne({_id: titleId, deletedAt: null});
 
         if(!title) return title;
 
@@ -37,21 +39,15 @@ class TitleService{
     }
 
     checkExistedId = async(titleId) => {
-        return await Title.exists({_id: titleId});
+        return await Title.exists({_id: titleId, deletedAt: null});
     }
 
     update = async(title) => {
 
-        await Title.findOneAndUpdate({_id: title._id}, title);
+        await Title.findOneAndUpdate({_id: title._id, deletedAt: null}, title);
         const nTitle = await Title.findById(title._id);
 
         return nTitle ? new TitleDTO(nTitle) : nTitle;
-
-    }
-
-    delete = async(itemId) => {
-
-        
 
     }
 

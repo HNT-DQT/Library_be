@@ -6,11 +6,13 @@ class TitleController{
         
         try {
 
-            const titles = await titleService.getAll();
+            const titles = await titleService.getAll({});
 
-            
-            for (let i in titles)
+            for (let i in titles){
                 delete titles[i].trend;
+                delete titles[i].deletedAt;
+            }
+                
             return res.json(titles);
 
         }catch(err){
@@ -78,9 +80,23 @@ class TitleController{
 
     }
 
-    deleteTitle(req, res){
+    deleteTitle = async(req, res) => {
 
-        res.json({content: 'delete title'});
+        try {
+            const titleId = req.query.id;
+            const currentTime = new Date();
+
+            const title = await titleService.update({_id: titleId, deletedAt: currentTime});
+
+            if(!title) return res.status(404).json('Not found');
+
+            return res.json({message: 'Delete successfully'});
+
+        }catch(err){
+            console.log(err);
+            return res.status(400).json({error: err.message});
+        }
+
 
     }
 
