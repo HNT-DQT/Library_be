@@ -1,0 +1,35 @@
+services:
+
+  mongodb:
+    image: mongo:6.0.3
+    restart: always
+    ports:
+      - 27017:27017
+    env_file: .env
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: $DB_USER
+      MONGO_INITDB_ROOT_PASSWORD: $DB_PWD
+    volumes:
+      - db:/data/db
+    logging:
+      driver: none
+  
+  app:
+    depends_on:
+      - mongodb
+    build: .
+    restart: always
+    ports:
+      - 8000:8000
+    env_file: .env
+    environment:
+      - MONGO_USERNAME=$DB_USER
+      - MONGO_PASSWORD=$DB_USER
+      - MONGO_HOSTNAME=db
+      - MONGO_PORT=$PORT
+      - MONGO_DBNAME=$DB_NAME
+    stdin_open: true
+    tty: true
+
+volumes:
+  db:
